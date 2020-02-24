@@ -1,0 +1,127 @@
+# This is a version of the schema model from chapter 14 of Parallel
+# Distributed Processing, Explorations in the Microstructure of Cognition,
+# Vol. 2, edited by James McClelland and David Rumelhart
+
+# Create the network
+addNet schema -i 6.0 -t 10 CONTINUOUS
+addGroup descriptors 40 INPUT DOT_PRODUCT INCR_CLAMP INTERACT_INTEGR
+connectGroups descriptors descriptors
+setObj descriptors.maxOutput   1.0
+setObj descriptors.initOutput  0.0
+setObj descriptors.minOutput  -0.2
+setObj descriptors.clampStrength 4
+
+# load examples
+loadExamples schema.ex -s inputs
+setObj inputs.minTime   6.0
+setObj inputs.maxTime   6.0
+
+# set up display
+setObj unitCellSize 24
+setObj unitCellSpacing 6
+resetPlot
+plotRow 1 b 1 n descriptors 5 b 1
+plotRow *     n descriptors 7
+
+# load weights
+resetNet
+loadWeights schema.wt
+
+# rename units
+setObj descriptors.unit(0).name  ceiling
+setObj descriptors.unit(1).name  walls
+setObj descriptors.unit(2).name  door
+setObj descriptors.unit(3).name  window
+setObj descriptors.unit(4).name  very-large
+setObj descriptors.unit(5).name  large
+setObj descriptors.unit(6).name  medium
+setObj descriptors.unit(7).name  small
+setObj descriptors.unit(8).name  very-small
+setObj descriptors.unit(9).name  desk
+setObj descriptors.unit(10).name telephone
+setObj descriptors.unit(11).name bed
+setObj descriptors.unit(12).name typewriter
+setObj descriptors.unit(13).name book-shelf
+setObj descriptors.unit(14).name carpet
+setObj descriptors.unit(15).name books
+setObj descriptors.unit(16).name desk-chair
+setObj descriptors.unit(17).name clock
+setObj descriptors.unit(18).name picture
+setObj descriptors.unit(19).name floor-lamp
+setObj descriptors.unit(20).name sofa
+setObj descriptors.unit(21).name easy-chair
+setObj descriptors.unit(22).name coffee-cup
+setObj descriptors.unit(23).name ash-tray
+setObj descriptors.unit(24).name fire-place
+setObj descriptors.unit(25).name drapes
+setObj descriptors.unit(26).name stove
+setObj descriptors.unit(27).name sink
+setObj descriptors.unit(28).name refrigerator
+setObj descriptors.unit(29).name toaster
+setObj descriptors.unit(30).name cupboard
+setObj descriptors.unit(31).name coffeepot
+setObj descriptors.unit(32).name dresser
+setObj descriptors.unit(33).name television
+setObj descriptors.unit(34).name bathtub
+setObj descriptors.unit(35).name toilet
+setObj descriptors.unit(36).name scale
+setObj descriptors.unit(37).name coat-hanger
+setObj descriptors.unit(38).name computer
+setObj descriptors.unit(39).name oven
+
+# add positive bias to ceiling unit (to force it on)
+connectGroupToUnits bias "ceiling" -t ceiling-bias
+randWeights -mean 5.0 -range 0.0 -t ceiling-bias
+freezeWeights
+
+# compensate for decay in Interactive Activation function
+proc adjustSchemaOutputs {} {
+    set f [expr 1.0 / (1.0 - [getObj dt])]
+    repeat i 40 {
+	set a [expr $f * [getObj descriptors.unit($i).output]]
+	if {$a > 1.0} { set a 1.0 }
+	setObj descriptors.unit($i).output $a
+	setObj descriptors.outputProcs.unitData($i) $a
+    }
+}
+setObj postTickProc "adjustSchemaOutputs"
+
+# function for calculating goodness
+proc goodness {} {
+    set g 0.0
+    repeat j 40 {
+	set aj [getObj input($j).output]
+	repeat i 40 {
+	    set wij [getObj descriptors.unit($j).incoming($i).weight]
+	    set ai  [getObj input($i).output]
+	    set g   [expr $g + $ai * $aj * $wij]
+	}
+    }
+    puts [format "Goodness is %f" [expr 0.5 * $g]]
+}
+setObj postEventProc "goodness"
+
+
+
+# use as preEventProc to turn on or off units by hand, then click on "empty" or 
+# (if you want to combine it with a standard input) one of the other examples
+#
+#   e.g. setObj preEventProc "turnOn {window drapes}"
+# or
+#   e.g. setObj preEventProc "turnOn window ; turnOff drapes"
+#
+# don't forget to remove preEventProc when finished
+#
+#   e.g. setObj preEventProc ""
+#
+proc turnOn {unitNames} {
+    foreach name $unitNames {
+	setObj $name.externalInput 1
+    }
+}
+
+proc turnOff {unitNames} {
+    foreach name $unitNames {
+	setObj $name.externalInput -1
+    }
+}
