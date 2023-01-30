@@ -3,12 +3,6 @@ A backup copy of the Light Efficient Network Simulator (Lens), which was origina
 
 Please cite the original source if the program is useful for your project.
 ```
-@book{rohde1999lens,
-  title={LENS: The light, efficient network simulator},
-  author={Rohde, Douglas LT},
-  year={1999},
-  publisher={School of Computer Science, Carnegie Mellon University Pittsburgh, PA}
-}
 @techreport{rohde1999lens,
   title={LENS: The light, efficient network simulator},
   author={Rohde, Douglas LT},
