@@ -13,6 +13,6 @@ Please cite the original source if the program is useful for your project.
 ```
 
 ## Sources
-* [the main site](https://ni.cmu.edu/~plaut/Lens/Manual/index.html).
+* [Rhode's website](https://ni.cmu.edu/~plaut/Lens/Manual/index.html).
 * [Plaut's lab website](https://www.cnbc.cmu.edu/~plaut/Resources.html). 
 
