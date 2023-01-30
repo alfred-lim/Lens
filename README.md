@@ -11,3 +11,9 @@ Please cite the original source if the program is useful for your project.
   institution={School of Computer Science, Carnegie Mellon University Pittsburgh, PA}
 }
 ```
+
+Sources
+```
+* [the main site](https://ni.cmu.edu/~plaut/Lens/Manual/index.html).
+* [Plaut's lab website](https://www.cnbc.cmu.edu/~plaut/Resources.html). 
+```
